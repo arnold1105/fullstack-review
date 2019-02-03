@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import $ from 'jquery';
 import Search from './components/Search.jsx';
 import RepoList from './components/RepoList.jsx';
+import TopRepo from './components/TopRepo.jsx';
+import getData from './ajaxget';
 
 class App extends React.Component {
   constructor(props) {
@@ -10,12 +12,38 @@ class App extends React.Component {
     this.state = { 
       repos: []
     }
+  }
 
+  topRepo(){
+    getData((err,data)=>{
+      if(err){
+        throw (err);
+        return
+      }
+      this.setState({repos: data})
+    })
+  }
+
+  componentDidMount(){
+    this.topRepo();
   }
 
   search (term) {
     console.log(`${term} was searched`);
     // TODO
+    $.ajax({
+      type: "POST",
+      url: "http://localhost:1128/repos",
+      data: JSON.stringify({term}),
+      contentType: "application/json",
+      success: (data) => {
+        console.log("this is the data", data);
+        
+      },
+      error: (error) => {
+        console.log('errored out', error)
+      }
+    })
   }
 
   render () {
